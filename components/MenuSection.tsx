@@ -42,7 +42,7 @@ export function MenuSection({
           </section>
         ))}
       </div>
-    </motion.section>
+    </section>
   );
 }
 
