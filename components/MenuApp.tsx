@@ -64,6 +64,53 @@ export function MenuApp({ table }: { table: number | null }) {
     (entry) => entry.category === displayedActiveCategory,
   );
 
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    });
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+
+    const touchEnd = {
+      x: e.changedTouches[0].clientX,
+      y: e.changedTouches[0].clientY,
+    };
+
+    const deltaX = touchStart.x - touchEnd.x;
+    const deltaY = touchStart.y - touchEnd.y;
+
+    // Check if the swipe was mostly horizontal
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      const currentIndex = visibleCategories.indexOf(displayedActiveCategory);
+      if (currentIndex === -1) return;
+
+      if (deltaX > 0) {
+        // Swipe left -> Next category
+        if (currentIndex < visibleCategories.length - 1) {
+          const nextCategory = visibleCategories[currentIndex + 1];
+          setActiveCategory(nextCategory);
+          // Auto-scroll the nav to the new category
+          const btn = document.getElementById(`cat-${nextCategory.replace(/\s+/g, "-")}`);
+          btn?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+        }
+      } else {
+        // Swipe right -> Previous category
+        if (currentIndex > 0) {
+          const prevCategory = visibleCategories[currentIndex - 1];
+          setActiveCategory(prevCategory);
+          const btn = document.getElementById(`cat-${prevCategory.replace(/\s+/g, "-")}`);
+          btn?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+        }
+      }
+    }
+    setTouchStart(null);
+  };
+
   return (
     <div className="min-h-screen bg-cream text-ink">
       <div className="sticky top-0 z-30">
@@ -76,7 +123,11 @@ export function MenuApp({ table }: { table: number | null }) {
         />
       </div>
 
-      <main>
+      <main
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className="min-h-[60vh]"
+      >
         <AnimatePresence mode="wait">
           {activeEntry ? (
             <MenuSection
