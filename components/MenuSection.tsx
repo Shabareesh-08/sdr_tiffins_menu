@@ -11,14 +11,7 @@ export function MenuSection({
   data: MenuCategory;
 }) {
   return (
-    <motion.section
-      key={category}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.18, ease: "easeOut" }}
-      className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8"
-    >
+    <section className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
       <header className="border-b border-ink/20 pb-4">
         <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-saffron">
           Sahadeva Reddy Menu

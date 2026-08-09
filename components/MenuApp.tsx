@@ -64,55 +64,25 @@ export function MenuApp({ table }: { table: number | null }) {
     (entry) => entry.category === displayedActiveCategory,
   );
 
-  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  const paginate = (newDirection: number) => {
+    const currentIndex = visibleCategories.indexOf(displayedActiveCategory);
+    if (currentIndex === -1) return;
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart({
-      x: e.targetTouches[0].clientX,
-      y: e.targetTouches[0].clientY,
-    });
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!touchStart) return;
-
-    const touchEnd = {
-      x: e.changedTouches[0].clientX,
-      y: e.changedTouches[0].clientY,
-    };
-
-    const deltaX = touchStart.x - touchEnd.x;
-    const deltaY = touchStart.y - touchEnd.y;
-
-    // Check if the swipe was mostly horizontal
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-      const currentIndex = visibleCategories.indexOf(displayedActiveCategory);
-      if (currentIndex === -1) return;
-
-      if (deltaX > 0) {
-        // Swipe left -> Next category
-        if (currentIndex < visibleCategories.length - 1) {
-          const nextCategory = visibleCategories[currentIndex + 1];
-          setActiveCategory(nextCategory);
-          // Auto-scroll the nav to the new category
-          const btn = document.getElementById(`cat-${nextCategory.replace(/\s+/g, "-")}`);
-          btn?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-        }
-      } else {
-        // Swipe right -> Previous category
-        if (currentIndex > 0) {
-          const prevCategory = visibleCategories[currentIndex - 1];
-          setActiveCategory(prevCategory);
-          const btn = document.getElementById(`cat-${prevCategory.replace(/\s+/g, "-")}`);
-          btn?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-        }
-      }
+    if (newDirection === 1 && currentIndex < visibleCategories.length - 1) {
+      const nextCategory = visibleCategories[currentIndex + 1];
+      setActiveCategory(nextCategory);
+      const btn = document.getElementById(`cat-${nextCategory.replace(/\s+/g, "-")}`);
+      btn?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    } else if (newDirection === -1 && currentIndex > 0) {
+      const prevCategory = visibleCategories[currentIndex - 1];
+      setActiveCategory(prevCategory);
+      const btn = document.getElementById(`cat-${prevCategory.replace(/\s+/g, "-")}`);
+      btn?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
     }
-    setTouchStart(null);
   };
 
   return (
-    <div className="min-h-screen bg-cream text-ink">
+    <div className="min-h-screen bg-cream text-ink overflow-hidden">
       <div className="sticky top-0 z-30">
         <Header search={search} onSearchChange={setSearch} table={table} />
         <CategoryNav
@@ -123,18 +93,32 @@ export function MenuApp({ table }: { table: number | null }) {
         />
       </div>
 
-      <main
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        className="min-h-[60vh]"
-      >
+      <main className="min-h-[60vh] overflow-x-hidden">
         <AnimatePresence mode="wait">
           {activeEntry ? (
-            <MenuSection
+            <motion.div
               key={`${activeEntry.category}-${search}`}
-              category={activeEntry.category}
-              data={activeEntry.data}
-            />
+              initial={{ opacity: 0, x: 15 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -15 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.8}
+              onDragEnd={(e, { offset }) => {
+                if (offset.x < -50) {
+                  paginate(1);
+                } else if (offset.x > 50) {
+                  paginate(-1);
+                }
+              }}
+              className="w-full cursor-grab active:cursor-grabbing touch-pan-y"
+            >
+              <MenuSection
+                category={activeEntry.category}
+                data={activeEntry.data}
+              />
+            </motion.div>
           ) : (
             <motion.div
               key="empty"
