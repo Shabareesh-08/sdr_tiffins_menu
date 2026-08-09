@@ -12,14 +12,19 @@ import {
 import { Header } from "./Header";
 import { CategoryNav } from "./CategoryNav";
 import { MenuSection } from "./MenuSection";
+import { CategoryGrid } from "./CategoryGrid";
 
 type FilteredCategory = MenuCategory & {
   subsections: MenuSubsection[];
 };
 
+type View = "landing" | "menu";
+
 export function MenuApp({ table }: { table: number | null }) {
   const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<CategoryName>(categories[0]);
+  const [view, setView] = useState<View>("landing");
+  const [activeCategory, setActiveCategory] =
+    useState<CategoryName>(categories[0]);
 
   const filteredMenu = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -38,7 +43,7 @@ export function MenuApp({ table }: { table: number | null }) {
           .map((subsection) => ({
             ...subsection,
             items: subsection.items.filter((item) =>
-              item.name.toLowerCase().includes(query),
+              item.name.toLowerCase().includes(query)
             ),
           }))
           .filter((subsection) => subsection.items.length > 0);
@@ -53,7 +58,10 @@ export function MenuApp({ table }: { table: number | null }) {
           } as FilteredCategory,
         };
       })
-      .filter(Boolean) as Array<{ category: CategoryName; data: FilteredCategory }>;
+      .filter(Boolean) as Array<{
+      category: CategoryName;
+      data: FilteredCategory;
+    }>;
   }, [search]);
 
   const visibleCategories = filteredMenu.map((entry) => entry.category);
@@ -61,7 +69,7 @@ export function MenuApp({ table }: { table: number | null }) {
     ? activeCategory
     : visibleCategories[0] ?? categories[0];
   const activeEntry = filteredMenu.find(
-    (entry) => entry.category === displayedActiveCategory,
+    (entry) => entry.category === displayedActiveCategory
   );
 
   const paginate = (newDirection: number) => {
@@ -71,31 +79,79 @@ export function MenuApp({ table }: { table: number | null }) {
     if (newDirection === 1 && currentIndex < visibleCategories.length - 1) {
       const nextCategory = visibleCategories[currentIndex + 1];
       setActiveCategory(nextCategory);
-      const btn = document.getElementById(`cat-${nextCategory.replace(/\s+/g, "-")}`);
-      btn?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      const btn = document.getElementById(
+        `cat-${nextCategory.replace(/\s+/g, "-")}`
+      );
+      btn?.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
     } else if (newDirection === -1 && currentIndex > 0) {
       const prevCategory = visibleCategories[currentIndex - 1];
       setActiveCategory(prevCategory);
-      const btn = document.getElementById(`cat-${prevCategory.replace(/\s+/g, "-")}`);
-      btn?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      const btn = document.getElementById(
+        `cat-${prevCategory.replace(/\s+/g, "-")}`
+      );
+      btn?.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
     }
+  };
+
+  const handleCategorySelect = (category: CategoryName) => {
+    setActiveCategory(category);
+    setView("menu");
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    if (value.trim()) {
+      setView("menu");
+    }
+  };
+
+  const handleBackToLanding = () => {
+    setView("landing");
+    setSearch("");
   };
 
   return (
     <div className="min-h-screen bg-cream text-ink overflow-hidden">
       <div className="sticky top-0 z-30">
-        <Header search={search} onSearchChange={setSearch} table={table} />
-        <CategoryNav
-          categories={visibleCategories.length ? visibleCategories : categories}
-          active={displayedActiveCategory}
-          onSelect={setActiveCategory}
-          disabled={visibleCategories.length === 0}
+        <Header
+          search={search}
+          onSearchChange={handleSearchChange}
+          table={table}
+          compact={view === "menu"}
         />
+        {view === "menu" && (
+          <CategoryNav
+            categories={
+              visibleCategories.length ? visibleCategories : categories
+            }
+            active={displayedActiveCategory}
+            onSelect={setActiveCategory}
+            disabled={visibleCategories.length === 0}
+          />
+        )}
       </div>
 
       <main className="min-h-[60vh] overflow-x-hidden">
         <AnimatePresence mode="wait">
-          {activeEntry ? (
+          {view === "landing" ? (
+            <motion.div
+              key="landing"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+            >
+              <CategoryGrid onSelect={handleCategorySelect} />
+            </motion.div>
+          ) : activeEntry ? (
             <motion.div
               key={`${activeEntry.category}-${search}`}
               initial={{ opacity: 0, x: 15 }}
@@ -131,7 +187,7 @@ export function MenuApp({ table }: { table: number | null }) {
               <p className="font-display text-2xl font-bold text-ink">
                 No items found
               </p>
-              <p className="mt-2 text-sm leading-6 text-ink/60">
+              <p className="mt-2 text-sm leading-6 text-ink/50">
                 Try searching a category or item name like dosa, chaat, pizza,
                 or juice.
               </p>
@@ -140,10 +196,35 @@ export function MenuApp({ table }: { table: number | null }) {
         </AnimatePresence>
       </main>
 
-      <footer className="border-t border-ink/10 bg-white/60 px-4 py-8 sm:px-6">
-        <div className="mx-auto max-w-5xl text-sm leading-6 text-ink/62">
-          <p className="font-bold text-ink">Sahadeva Reddy Sweets, Snacks and Tiffins</p>
-          <p>Gaddiannaram, Dilshuknagar</p>
+      {/* Back to menu button when in menu view */}
+      {view === "menu" && (
+        <div className="mx-auto max-w-5xl px-4 pb-4 sm:px-6">
+          <button
+            type="button"
+            onClick={handleBackToLanding}
+            className="w-full rounded-xl border border-ink/10 bg-white py-3 text-center text-sm font-semibold text-forest transition-colors hover:bg-forest-light"
+          >
+            ← Back to all categories
+          </button>
+        </div>
+      )}
+
+      <footer className="border-t border-ink/8 bg-white/50 px-4 py-8 sm:px-6">
+        <div className="mx-auto max-w-5xl">
+          <p className="font-display text-lg font-bold text-ink">
+            Sahadeva Reddy
+          </p>
+          <p className="font-display text-sm font-semibold text-forest">
+            Sweets, Snacks &amp; Tiffins
+          </p>
+          <div className="mt-3 space-y-1 text-xs leading-5 text-ink/50">
+            <p>16-11-740/9/A/38, Gaddiannaram,</p>
+            <p>Dilsukhnagar, Hyderabad, Telangana 500060</p>
+          </div>
+          <div className="mt-4 h-px bg-ink/8" />
+          <p className="mt-3 text-[0.65rem] uppercase tracking-widest text-ink/30">
+            100% Pure Vegetarian
+          </p>
         </div>
       </footer>
     </div>

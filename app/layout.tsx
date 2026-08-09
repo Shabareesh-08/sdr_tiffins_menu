@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Sahadeva Reddy Sweets, Snacks and Tiffins Menu",
   description:
-    "QR digital menu for Sahadeva Reddy Sweets, Snacks and Tiffins, a 100% pure vegetarian Indian tiffins, chaat, juice, and snacks restaurant.",
+    "Digital menu for Sahadeva Reddy Sweets, Snacks and Tiffins, a 100% pure vegetarian Indian tiffins, chaat, juice, and snacks restaurant.",
   applicationName: "Sahadeva Reddy Menu",
   icons: {
     icon: "/icon-192.png",

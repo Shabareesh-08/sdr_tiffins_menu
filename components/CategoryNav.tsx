@@ -24,7 +24,6 @@ export function CategoryNav({
     if (!el) return;
 
     const checkScroll = () => {
-      // Show indicator if not at the very end (5px threshold)
       setCanScrollRight(
         el.scrollWidth > el.clientWidth &&
           el.scrollLeft < el.scrollWidth - el.clientWidth - 5
@@ -43,11 +42,11 @@ export function CategoryNav({
   return (
     <nav
       aria-label="Menu categories"
-      className="relative border-b border-ink/15 bg-cream"
+      className="relative border-b border-ink/10 bg-cream"
     >
       <div
         ref={scrollRef}
-        className="mx-auto flex max-w-5xl gap-6 overflow-x-auto px-4 py-3 sm:px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="hide-scrollbar mx-auto flex max-w-5xl gap-1 overflow-x-auto px-3 py-2.5 sm:gap-2 sm:px-5"
       >
         {categories.map((category) => {
           const selected = category === active;
@@ -58,22 +57,30 @@ export function CategoryNav({
               type="button"
               onClick={() => {
                 onSelect(category);
-                const btn = document.getElementById(`cat-${category.replace(/\s+/g, "-")}`);
+                const btn = document.getElementById(
+                  `cat-${category.replace(/\s+/g, "-")}`
+                );
                 if (btn && scrollRef.current) {
                   const container = scrollRef.current;
                   const scrollLeft =
-                    btn.offsetLeft - container.offsetWidth / 2 + btn.offsetWidth / 2;
+                    btn.offsetLeft -
+                    container.offsetWidth / 2 +
+                    btn.offsetWidth / 2;
                   container.scrollTo({ left: scrollLeft, behavior: "smooth" });
                 }
               }}
               disabled={disabled}
-              className="relative flex min-h-10 shrink-0 items-center px-0 font-display text-sm font-bold uppercase tracking-normal text-ink/62 transition hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
+              className={`relative flex min-h-9 shrink-0 items-center rounded-full px-3.5 py-1.5 font-sans text-xs font-semibold uppercase tracking-wide transition-all disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm ${
+                selected
+                  ? "bg-saffron/10 text-saffron"
+                  : "text-ink/50 hover:bg-ink/4 hover:text-ink/70"
+              }`}
             >
-              <span className={selected ? "text-saffron" : ""}>{category}</span>
+              {category}
               {selected ? (
                 <motion.span
-                  layoutId="active-category-underline"
-                  className="absolute bottom-0 left-0 right-0 h-px bg-saffron"
+                  layoutId="active-category-pill"
+                  className="absolute inset-0 rounded-full border border-saffron/25"
                   transition={{ duration: 0.2, ease: "easeOut" }}
                 />
               ) : null}
@@ -83,8 +90,11 @@ export function CategoryNav({
       </div>
 
       {canScrollRight ? (
-        <div className="pointer-events-none absolute right-0 top-0 flex h-full items-center justify-center bg-cream pl-1 pr-2 sm:hidden">
-          <ChevronRight className="h-5 w-5 animate-pulse text-saffron" aria-hidden="true" />
+        <div className="pointer-events-none absolute right-0 top-0 flex h-full items-center justify-center bg-gradient-to-l from-cream via-cream to-transparent pl-6 pr-2 sm:hidden">
+          <ChevronRight
+            className="h-4 w-4 animate-pulse text-saffron"
+            aria-hidden="true"
+          />
         </div>
       ) : null}
     </nav>
