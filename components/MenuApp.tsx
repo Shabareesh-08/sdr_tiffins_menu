@@ -33,9 +33,11 @@ export function MenuApp({ table }: { table: number | null }) {
   }, []);
 
   useEffect(() => {
-    const onPopState = (e: PopStateEvent) => {
-      if (e.state?.view === "landing" || !e.state) {
+    const onPopState = () => {
+      if (window.location.hash !== "#menu") {
         goToLanding();
+      } else {
+        setView("menu");
       }
     };
 
@@ -121,19 +123,23 @@ export function MenuApp({ table }: { table: number | null }) {
   const handleCategorySelect = (category: CategoryName) => {
     setActiveCategory(category);
     setView("menu");
-    window.history.pushState({ view: "menu", category }, "");
+    window.history.pushState(null, "", "#menu");
   };
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
     if (value.trim() && view !== "menu") {
       setView("menu");
-      window.history.pushState({ view: "menu" }, "");
+      window.history.pushState(null, "", "#menu");
     }
   };
 
   const handleBackToLanding = () => {
-    window.history.back();
+    if (window.location.hash === "#menu") {
+      window.history.back();
+    } else {
+      goToLanding();
+    }
   };
 
   return (
