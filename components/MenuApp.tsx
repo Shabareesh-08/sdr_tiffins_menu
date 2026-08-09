@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   categories,
@@ -25,6 +25,23 @@ export function MenuApp({ table }: { table: number | null }) {
   const [view, setView] = useState<View>("landing");
   const [activeCategory, setActiveCategory] =
     useState<CategoryName>(categories[0]);
+
+  // Browser back button / swipe-back support
+  const goToLanding = useCallback(() => {
+    setView("landing");
+    setSearch("");
+  }, []);
+
+  useEffect(() => {
+    const onPopState = (e: PopStateEvent) => {
+      if (e.state?.view === "landing" || !e.state) {
+        goToLanding();
+      }
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [goToLanding]);
 
   const filteredMenu = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -104,18 +121,19 @@ export function MenuApp({ table }: { table: number | null }) {
   const handleCategorySelect = (category: CategoryName) => {
     setActiveCategory(category);
     setView("menu");
+    window.history.pushState({ view: "menu", category }, "");
   };
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
-    if (value.trim()) {
+    if (value.trim() && view !== "menu") {
       setView("menu");
+      window.history.pushState({ view: "menu" }, "");
     }
   };
 
   const handleBackToLanding = () => {
-    setView("landing");
-    setSearch("");
+    window.history.back();
   };
 
   return (
