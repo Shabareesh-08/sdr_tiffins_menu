@@ -143,7 +143,7 @@ export function MenuApp({ table }: { table: number | null }) {
       <footer className="border-t border-ink/10 bg-white/60 px-4 py-8 sm:px-6">
         <div className="mx-auto max-w-5xl text-sm leading-6 text-ink/62">
           <p className="font-bold text-ink">Sahadeva Reddy Sweets, Snacks and Tiffins</p>
-          <p>{"// TODO: add contact info"}</p>
+          <p>Gaddiannaram, Dilshuknagar</p>
         </div>
       </footer>
     </div>
