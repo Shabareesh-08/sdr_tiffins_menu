@@ -35,9 +35,9 @@ export const menu = {
         items: [
           { name: "Idly", price: 60 },
           { name: "Ghee Idly", price: 90 },
-          { name: "Ghee Karam Idly", price: 90 },
+          { name: "Ghee Karam Idly", price: 90, hero: true },
           { name: "Ghee Podi Idly", price: 90 },
-          { name: "Sambar Idly", price: 80 },
+          { name: "Sambar Idly", price: 80, hero: true },
           { name: "Ghee Sambar Idly", price: 100 },
           { name: "Tawa Idly", price: 90 },
         ],
@@ -47,7 +47,7 @@ export const menu = {
         items: [
           { name: "Plain Dosa", price: 60 },
           { name: "Onion Dosa", price: 70 },
-          { name: "Aloo Masala Dosa", price: 70 },
+          { name: "Aloo Masala Dosa", price: 70, hero: true },
           { name: "Upma Dosa", price: 70 },
           { name: "Ghee Aloo Masala Dosa", price: 100 },
           { name: "Ghee Upma Dosa", price: 90 },
@@ -108,10 +108,10 @@ export const menu = {
           { name: "Cutlet Ragada", price: 90 },
           { name: "Kachori Ragada", price: 90 },
           { name: "Aloo Toast", price: 60 },
-          { name: "Tawa Paneer Tikka", price: 110 },
+          { name: "Tawa Paneer Tikka", price: 110, hero: true },
           { name: "Pani Puri", price: 40, hero: true },
           { name: "Bhel Puri", price: 70 },
-          { name: "Sev Puri", price: 70 },
+          { name: "Sev Puri", price: 70, hero: true },
           { name: "Masala Puri", price: 70 },
           { name: "Vada Pav", price: 80 },
           { name: "Cheese Vada Pav", price: 100 },
@@ -122,7 +122,7 @@ export const menu = {
       {
         title: "Dahi Chaat",
         items: [
-          { name: "Dahi Puri", price: 90 },
+          { name: "Dahi Puri", price: 90, hero: true },
           { name: "Dahi Papdi", price: 90 },
           { name: "Dahi Samosa", price: 90 },
           { name: "Dahi Kachori", price: 90 },
@@ -137,7 +137,7 @@ export const menu = {
       {
         title: "Pav Bhajis",
         items: [
-          { name: "Butter Pav Bhaji", price: 110 },
+          { name: "Butter Pav Bhaji", price: 110, hero: true },
           { name: "Cheese Pav Bhaji", price: 140, hero: true },
           { name: "Paneer Pav Bhaji", price: 140 },
           { name: "Masala Pav Bhaji", price: 140 },
