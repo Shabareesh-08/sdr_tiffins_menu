@@ -241,7 +241,6 @@ export const menu = {
           { name: "Chocolate Milkshake", price: 120 },
           { name: "Oreo Milkshake", price: 120 },
           { name: "Butterscotch Milkshake", price: 120 },
-          { name: "Brownie Milkshake", price: 140, hero: true },
         ],
       },
     ],
